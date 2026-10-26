@@ -44,8 +44,23 @@ La primera vez se crea automáticamente el archivo `inventario.csv` en la carpet
 
 - Nombre, categoría y texto de búsqueda no pueden quedar vacíos.
 - Cantidades e IDs deben ser enteros no negativos.
+
+## Organización del proyecto
+
+- main.py: contiene el menú principal y las operaciones CRUD.
+- persistencia.py: contiene las funciones para crear, leer y guardar los productos en el archivo CSV.
+- README.md: contiene la descripción del proyecto y las instrucciones de uso.
+
+- ## Persistencia de datos
+
+El sistema utiliza un archivo CSV para almacenar los productos registrados. Esto permite conservar la información entre ejecuciones del programa.
+
+## Control de versiones
+
+Se utilizó Git para registrar cambios del proyecto y GitHub para publicar los archivos y documentar su evolución.
 - El precio debe ser numérico y mayor que cero (acepta punto o coma decimal).
 - Si el CSV no se puede crear, leer o escribir (por ejemplo, por permisos), se muestra un mensaje y el inventario no se sobrescribe.
 - Si una fila del CSV tiene datos dañados, se omite con una advertencia y el resto del inventario se carga normalmente.
+- 
 - Si el archivo se borra mientras el programa está abierto, se vuelve a crear.
 - `Ctrl+C` cierra el programa sin mostrar errores.
