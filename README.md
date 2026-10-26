@@ -59,6 +59,16 @@ El sistema utiliza un archivo CSV para almacenar los productos registrados. Esto
 
 Se utilizó Git para registrar cambios del proyecto y GitHub para publicar los archivos y documentar su evolución.
 - El precio debe ser numérico y mayor que cero (acepta punto o coma decimal).
+
+## Pasos para ejecutar el proyecto
+
+1. Tener Python instalado en el computador.
+2. Guardar `main.py` y `persistencia.py` en la misma carpeta.
+3. Abrir una terminal dentro de esa carpeta.
+4. Ejecutar el comando `python main.py`.
+5. Utilizar el menú para registrar, consultar, buscar, actualizar o eliminar productos.
+
+El archivo `inventario.csv` se utiliza para almacenar los productos registrados y conservar la información entre ejecuciones.
 - Si el CSV no se puede crear, leer o escribir (por ejemplo, por permisos), se muestra un mensaje y el inventario no se sobrescribe.
 - Si una fila del CSV tiene datos dañados, se omite con una advertencia y el resto del inventario se carga normalmente.
 - 
