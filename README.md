@@ -55,7 +55,7 @@ La primera vez se crea automáticamente el archivo `inventario.csv` en la carpet
 
 El sistema utiliza un archivo CSV para almacenar los productos registrados. Esto permite conservar la información entre ejecuciones del programa.
 
-## Control de versiones
+##Control de versiones
 
 Se utilizó Git para registrar cambios del proyecto y GitHub para publicar los archivos y documentar su evolución.
 - El precio debe ser numérico y mayor que cero (acepta punto o coma decimal).
