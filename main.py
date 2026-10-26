@@ -1,92 +1,117 @@
+
 """
-==========================================================
 SISTEMA DE SEGUIMIENTO DE INVENTARIO - DROPSHIPPING
-==========================================================
-Archivo principal del programa. Contiene el menú, las
-validaciones de entrada, las operaciones CRUD, la búsqueda
-y el conteo del inventario.
 
-El manejo del archivo CSV se importa desde persistencia.py.
+Archivo principal del programa.
+Contiene el menu, las validaciones y las operaciones CRUD.
+La lectura y escritura del CSV se realizan en persistencia.py.
 """
 
-# Importación de las funciones del módulo de persistencia
+# Importa las funciones del modulo de persistencia.
 from persistencia import crear_archivo, leer_productos, guardar_productos
 
-# Cantidad mínima a partir de la cual un producto necesita reabastecerse
+# Cantidad minima para recomendar reabastecimiento.
 LIMITE_REABASTECER = 5
 
 
-# ----------------------------------------------------------
-# FUNCIÓN PARA VALIDAR NÚMEROS ENTEROS
-# ----------------------------------------------------------
+# ==========================================================
+# VALIDACION DE TEXTOS
+# ==========================================================
+def pedir_texto(mensaje):
+    """Solicita texto y evita que el campo quede vacio."""
+
+    while True:
+        texto = input(mensaje).strip()
+
+        if texto:
+            return texto
+
+        print("Error: este campo no puede quedar vacio.")
+
+
+# ==========================================================
+# VALIDACION DE NUMEROS ENTEROS
+# ==========================================================
 def pedir_entero(mensaje):
-    """Solicita un número entero no negativo y evita entradas incorrectas."""
+    """Solicita un numero entero no negativo."""
+
     while True:
         try:
             numero = int(input(mensaje))
+
             if numero < 0:
-                print("Error: el número no puede ser negativo.")
+                print("Error: el numero no puede ser negativo.")
             else:
                 return numero
+
         except ValueError:
-            print("Error: debes ingresar un número entero.")
+            print("Error: debes ingresar un numero entero.")
 
 
-# ----------------------------------------------------------
-# FUNCIÓN PARA VALIDAR PRECIOS
-# ----------------------------------------------------------
+# ==========================================================
+# VALIDACION DE PRECIOS
+# ==========================================================
 def pedir_precio(mensaje):
-    """Solicita un precio válido (numérico y mayor que cero)."""
+    """Solicita un precio numerico mayor que cero."""
+
     while True:
         try:
-            # Se permite escribir el precio con coma decimal (ej: 25000,50)
-            precio = float(input(mensaje).replace(",", "."))
+            precio = float(input(mensaje))
+
             if precio <= 0:
                 print("Error: el precio debe ser mayor que cero.")
             else:
                 return precio
+
         except ValueError:
-            print("Error: debes ingresar un valor numérico.")
-
-
-# ----------------------------------------------------------
-# FUNCIÓN PARA VALIDAR TEXTOS NO VACÍOS
-# ----------------------------------------------------------
-def pedir_texto(mensaje, campo):
-    """Solicita un texto que no quede vacío (nombre o categoría)."""
-    while True:
-        texto = input(mensaje).strip()
-        if texto != "":
-            return texto
-        print(f"Error: {campo} no puede quedar vacío.")
+            print("Error: debes ingresar un valor numerico.")
 
 
 # ==========================================================
-# CRUD - CREATE
+# VALIDACION DE CONFIRMACIONES
+# ==========================================================
+def pedir_confirmacion(mensaje):
+    """Solicita una respuesta afirmativa o negativa."""
+
+    while True:
+        respuesta = input(mensaje).strip().lower()
+
+        if respuesta in ("s", "si", "sí"):
+            return True
+
+        elif respuesta == "n":
+            return False
+
+        else:
+            print("Escribe 's' para si o 'n' para no.")
+
+
+# ==========================================================
+# CRUD - CREATE: REGISTRAR PRODUCTO
 # ==========================================================
 def crear_producto():
-    """Registra un nuevo producto en el inventario."""
+    """Registra un producto nuevo en el inventario."""
+
     productos = leer_productos()
-    # Si hubo error de lectura no se continúa, para no perder datos
+
+    # Si ocurre un error al leer, no se modifica el inventario.
     if productos is None:
         return
 
     print("\n--- REGISTRAR PRODUCTO ---")
 
-    # Generar un nuevo ID consecutivo
-    if len(productos) == 0:
-        nuevo_id = 1
-    else:
-        nuevo_id = max(producto["id"] for producto in productos) + 1
+    # Genera un ID consecutivo a partir del mayor ID existente.
+    nuevo_id = max(
+        (producto["id"] for producto in productos),
+        default=0
+    ) + 1
 
-    # Validación del nombre y la categoría
-    nombre = pedir_texto("Nombre del producto: ", "el nombre")
-    categoria = pedir_texto("Categoría: ", "la categoría")
-
+    nombre = pedir_texto("Nombre del producto: ")
+    categoria = pedir_texto("Categoria: ")
     cantidad = pedir_entero("Cantidad disponible: ")
     precio = pedir_precio("Precio del producto: ")
 
-    # Diccionario que representa un producto
+    # Diccionario con los datos del producto.
     producto = {
         "id": nuevo_id,
         "nombre": nombre,
@@ -95,37 +120,35 @@ def crear_producto():
         "precio": precio
     }
 
-    # Inserción del nuevo producto en la lista y guardado en el CSV
+    # Agrega el producto y guarda los cambios en el CSV.
     productos.append(producto)
 
     if guardar_productos(productos):
         print("\nProducto registrado correctamente.")
         print("ID asignado:", nuevo_id)
-    else:
-        print("El producto no pudo registrarse.")
 
 
 # ==========================================================
-# CRUD - READ
+# CRUD - READ: MOSTRAR INVENTARIO
 # ==========================================================
 def leer_y_mostrar_productos():
-    """Muestra todos los productos almacenados."""
+    """Muestra todos los productos registrados."""
+
     productos = leer_productos()
+
     if productos is None:
         return
 
     print("\n--- INVENTARIO ---")
 
-    if len(productos) == 0:
+    if not productos:
         print("No hay productos registrados.")
         return
 
-    # Recorrido de la lista para mostrar los productos
+    # Recorre la lista y muestra la informacion de cada producto.
     for producto in productos:
-        cantidad = producto["cantidad"]
 
-        # Determinar el estado del inventario
-        if cantidad <= LIMITE_REABASTECER:
+        if producto["cantidad"] <= LIMITE_REABASTECER:
             estado = "REABASTECER"
         else:
             estado = "Disponible"
@@ -133,67 +156,72 @@ def leer_y_mostrar_productos():
         print("----------------------------------")
         print("ID:", producto["id"])
         print("Producto:", producto["nombre"])
-        print("Categoría:", producto["categoria"])
-        print("Cantidad:", cantidad)
-        print("Precio: $", format(producto["precio"], ",.0f"))
+        print("Categoria:", producto["categoria"])
+        print("Cantidad:", producto["cantidad"])
+        print(f"Precio: ${producto['precio']:,.0f}")
         print("Estado:", estado)
 
     print("----------------------------------")
 
 
 # ==========================================================
-# FUNCIÓN DE BÚSQUEDA
+# BUSCAR PRODUCTO
 # ==========================================================
 def buscar_producto():
-    """Busca productos cuyo nombre contenga el texto ingresado."""
+    """Busca productos por nombre completo o parcial."""
+
     productos = leer_productos()
+
     if productos is None:
         return
 
     print("\n--- BUSCAR PRODUCTO ---")
     nombre_buscar = pedir_texto(
-        "Ingrese el nombre del producto: ", "la búsqueda"
+        "Ingrese el nombre o parte del nombre: "
     ).lower()
 
-    encontrados = []
+    # Encuentra coincidencias sin distinguir mayusculas y minusculas.
+    encontrados = [
+        producto
+        for producto in productos
+        if nombre_buscar in producto["nombre"].lower()
+    ]
 
-    # Recorrido de la lista para realizar la búsqueda (sin distinguir mayúsculas)
-    for producto in productos:
-        if nombre_buscar in producto["nombre"].lower():
-            encontrados.append(producto)
+    if not encontrados:
+        print("No se encontro ningun producto.")
+        return
 
-    if len(encontrados) == 0:
-        print("No se encontró ningún producto.")
-    else:
-        print("\nProductos encontrados:")
-        for producto in encontrados:
-            print(
-                producto["id"],
-                "-",
-                producto["nombre"],
-                "- Cantidad:",
-                producto["cantidad"]
-            )
+    print("\nProductos encontrados:")
+
+    for producto in encontrados:
+        print(
+            f"ID: {producto['id']} | "
+            f"{producto['nombre']} | "
+            f"Categoria: {producto['categoria']} | "
+            f"Cantidad: {producto['cantidad']} | "
+            f"Precio: ${producto['precio']:,.0f}"
+        )
 
 
 # ==========================================================
-# FUNCIÓN PARA CONTAR PRODUCTOS
+# CONTAR PRODUCTOS
 # ==========================================================
 def contar_productos():
-    """Cuenta los productos registrados y los que necesitan reabastecimiento."""
+    """Cuenta productos registrados y productos con stock bajo."""
+
     productos = leer_productos()
+
     if productos is None:
         return
 
+    necesitan_reabastecimiento = sum(
+        1
+        for producto in productos
+        if producto["cantidad"] <= LIMITE_REABASTECER
+    )
+
     print("\n--- CONTEO DEL INVENTARIO ---")
     print("Cantidad de productos registrados:", len(productos))
-
-    # Contar productos que necesitan reabastecimiento
-    necesitan_reabastecimiento = 0
-    for producto in productos:
-        if producto["cantidad"] <= LIMITE_REABASTECER:
-            necesitan_reabastecimiento += 1
-
     print(
         "Productos que necesitan reabastecimiento:",
         necesitan_reabastecimiento
@@ -201,87 +229,91 @@ def contar_productos():
 
 
 # ==========================================================
-# CRUD - UPDATE
+# CRUD - UPDATE: ACTUALIZAR PRODUCTO
 # ==========================================================
 def actualizar_producto():
-    """Modifica la cantidad y, opcionalmente, el precio de un producto."""
+    """Actualiza la cantidad y, opcionalmente, el precio."""
+
     productos = leer_productos()
+
     if productos is None:
         return
 
     print("\n--- ACTUALIZAR PRODUCTO ---")
     id_buscar = pedir_entero("Ingrese el ID del producto: ")
 
-    encontrado = False
+    # Busca el producto mediante su identificador.
+    producto = next(
+        (p for p in productos if p["id"] == id_buscar),
+        None
+    )
 
-    # Recorrido de la lista para encontrar el producto
-    for producto in productos:
-        if producto["id"] == id_buscar:
-            encontrado = True
-            print("\nProducto encontrado:", producto["nombre"])
-
-            # Actualización de la cantidad
-            producto["cantidad"] = pedir_entero("Nueva cantidad disponible: ")
-
-            # Actualización opcional del precio
-            cambiar_precio = input(
-                "¿Desea actualizar el precio? (s/n): "
-            ).strip().lower()
-
-            if cambiar_precio == "s":
-                producto["precio"] = pedir_precio("Nuevo precio: ")
-            break
-
-    if encontrado:
-        if guardar_productos(productos):
-            print("Producto actualizado correctamente.")
-    else:
+    if producto is None:
         print("No existe un producto con ese ID.")
+        return
+
+    print("Producto encontrado:", producto["nombre"])
+
+    # Actualiza la cantidad disponible.
+    producto["cantidad"] = pedir_entero(
+        "Nueva cantidad disponible: "
+    )
+
+    # El cambio del precio es opcional.
+    if pedir_confirmacion("Desea actualizar el precio? (s/n): "):
+        producto["precio"] = pedir_precio("Nuevo precio: ")
+
+    if guardar_productos(productos):
+        print("Producto actualizado correctamente.")
 
 
 # ==========================================================
-# CRUD - DELETE
+# CRUD - DELETE: ELIMINAR PRODUCTO
 # ==========================================================
 def eliminar_producto():
-    """Elimina un producto del inventario después de confirmar."""
+    """Elimina un producto despues de solicitar confirmacion."""
+
     productos = leer_productos()
+
     if productos is None:
         return
 
     print("\n--- ELIMINAR PRODUCTO ---")
     id_eliminar = pedir_entero("Ingrese el ID del producto: ")
 
-    encontrado = False
+    # Busca el producto por su ID.
+    producto = next(
+        (p for p in productos if p["id"] == id_eliminar),
+        None
+    )
 
-    # Recorrido para localizar el producto
-    for producto in productos:
-        if producto["id"] == id_eliminar:
-            encontrado = True
-            confirmacion = input(
-                f"¿Desea eliminar '{producto['nombre']}'? (s/n): "
-            ).strip().lower()
-
-            if confirmacion == "s":
-                # Eliminación del producto de la lista y guardado
-                productos.remove(producto)
-                if guardar_productos(productos):
-                    print("Producto eliminado correctamente.")
-            else:
-                print("Operación cancelada.")
-            break
-
-    if not encontrado:
+    if producto is None:
         print("No existe un producto con ese ID.")
+        return
+
+    confirmacion = pedir_confirmacion(
+        f"Desea eliminar '{producto['nombre']}'? (s/n): "
+    )
+
+    if not confirmacion:
+        print("Operacion cancelada.")
+        return
+
+    productos.remove(producto)
+
+    if guardar_productos(productos):
+        print("Producto eliminado correctamente.")
 
 
 # ==========================================================
-# MENÚ PRINCIPAL
+# MENU PRINCIPAL
 # ==========================================================
 def menu():
-    """Muestra el menú principal y ejecuta la opción elegida."""
-    # Si el archivo no se puede crear, el programa no puede funcionar
+    """Muestra el menu principal del sistema."""
+
+    # Crea el archivo CSV si todavia no existe.
     if not crear_archivo():
-        print("El programa no puede continuar sin el archivo de inventario.")
+        print("No se puede iniciar el programa sin acceso al CSV.")
         return
 
     while True:
@@ -297,33 +329,42 @@ def menu():
         print("7. Salir")
         print("====================================")
 
-        opcion = input("Seleccione una opción: ").strip()
+        try:
+            opcion = input("Seleccione una opcion: ").strip()
 
+        except (EOFError, KeyboardInterrupt):
+            print("\nPrograma interrumpido por el usuario.")
+            break
+
+        # Ejecuta la opcion que selecciono el usuario.
         if opcion == "1":
             crear_producto()
+
         elif opcion == "2":
             leer_y_mostrar_productos()
+
         elif opcion == "3":
             buscar_producto()
+
         elif opcion == "4":
             actualizar_producto()
+
         elif opcion == "5":
             eliminar_producto()
+
         elif opcion == "6":
             contar_productos()
+
         elif opcion == "7":
             print("Programa finalizado.")
             break
+
         else:
-            print("Error: opción no válida.")
+            print("Error: opcion no valida. Seleccione del 1 al 7.")
 
 
 # ==========================================================
 # INICIO DEL PROGRAMA
 # ==========================================================
 if __name__ == "__main__":
-    try:
-        menu()
-    except (KeyboardInterrupt, EOFError):
-        # Permite cerrar el programa con Ctrl+C sin mostrar errores largos
-        print("\nPrograma interrumpido por el usuario.")
+    menu()
