@@ -51,7 +51,7 @@ La primera vez se crea automáticamente el archivo `inventario.csv` en la carpet
 - persistencia.py: contiene las funciones para crear, leer y guardar los productos en el archivo CSV.
 - README.md: contiene la descripción del proyecto y las instrucciones de uso.
 
-- ## Persistencia de datos
+ ## Persistencia de datos
 
 El sistema utiliza un archivo CSV para almacenar los productos registrados. Esto permite conservar la información entre ejecuciones del programa.
 
