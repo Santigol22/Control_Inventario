@@ -1,5 +1,6 @@
 
 import csv
+import math
 import os
 
 # ==========================================================
@@ -8,7 +9,7 @@ import os
 # ==========================================================
 
 # Nombre del archivo donde se almacenan los productos.
-# Se utiliza una ruta relativa para que funcione en Colab.
+# Se utiliza una ruta relativa para que el archivo quede junto al programa.
 ARCHIVO = "inventario.csv"
 
 # Columnas del archivo CSV.
@@ -21,13 +22,12 @@ CAMPOS = ["id", "nombre", "categoria", "cantidad", "precio"]
 def crear_archivo():
     """Crea el archivo CSV si todavia no existe."""
 
-    if os.path.exists(ARCHIVO):
-        return True
-
     try:
-        with open(ARCHIVO, "w", newline="", encoding="utf-8") as archivo:
-            escritor = csv.writer(archivo)
-            escritor.writerow(CAMPOS)
+        # Si el archivo no existe o esta vacio, crea sus encabezados.
+        if not os.path.exists(ARCHIVO) or os.path.getsize(ARCHIVO) == 0:
+            with open(ARCHIVO, "w", newline="", encoding="utf-8") as archivo:
+                escritor = csv.writer(archivo)
+                escritor.writerow(CAMPOS)
 
         return True
 
@@ -75,6 +75,7 @@ def leer_productos():
                         or not producto["nombre"]
                         or not producto["categoria"]
                         or producto["cantidad"] < 0
+                        or not math.isfinite(producto["precio"])
                         or producto["precio"] <= 0
                     ):
                         print(f"Advertencia: datos invalidos en la fila {numero_fila}.")
