@@ -1,76 +1,108 @@
 # Sistema de Seguimiento de Inventario para Dropshipping
 
-Programa de consola en Python para administrar el inventario de una tienda de dropshipping. Permite registrar, consultar, buscar, actualizar, eliminar y contar productos. Los datos se guardan en un archivo CSV, por lo que se conservan al cerrar y volver a abrir el programa.
+## 1. Descripción del proyecto
 
-## Requisitos
+Este proyecto es una aplicación de consola desarrollada en Python para administrar el inventario de una tienda de dropshipping. Permite registrar, consultar, buscar, actualizar, eliminar y contar productos.
 
-- Python 3.8 o superior.
-- No necesita librerías externas (solo usa `csv` y `os`, que vienen con Python).
+La información se almacena en un archivo CSV llamado `inventario.csv`. De esta manera, los productos permanecen guardados cuando se cierra el programa y se vuelve a ejecutar.
 
-## Cómo ejecutar
+## 2. Objetivo
 
-1. Coloque `main.py` y `persistencia.py` en la misma carpeta.
-2. Abra una terminal en esa carpeta.
-3. Ejecute:
+Desarrollar un sistema sencillo y modular que facilite el control de productos, cantidades disponibles y precios, aplicando operaciones CRUD, validación de datos y almacenamiento persistente mediante archivos CSV.
+
+## 3. Requisitos
+
+- Python 3.8 o una versión posterior.
+- No requiere instalar librerías externas. Utiliza los módulos estándar `csv`, `math` y `os` incluidos en Python.
+
+## 4. Archivos del proyecto
+
+| Archivo | Descripción |
+|---|---|
+| `main.py` | Contiene el menú principal, las validaciones de entrada y las operaciones CRUD. |
+| `persistencia.py` | Contiene las funciones para crear, leer y guardar la información en el archivo CSV. |
+| `inventario.csv` | Archivo de datos. Se crea automáticamente y almacena los productos registrados. |
+| `README.md` | Documento con la descripción, instalación y uso del sistema. |
+
+## 5. Instalación y ejecución
+
+1. Instalar Python 3.8 o superior.
+2. Descargar o clonar este repositorio de GitHub.
+3. Verificar que los archivos `main.py` y `persistencia.py` estén en la misma carpeta.
+4. Abrir una terminal o consola dentro de esa carpeta.
+5. Ejecutar el programa con el comando:
 
 ```bash
 python main.py
 ```
 
-(En algunos sistemas el comando es `python3 main.py`.)
+En algunos equipos puede ser necesario utilizar:
 
-La primera vez se crea automáticamente el archivo `inventario.csv` en la carpeta desde la que se ejecuta el programa.
+```bash
+python3 main.py
+```
 
-## Archivos del proyecto
+Al iniciar, el programa crea automáticamente `inventario.csv` si el archivo no existe o está vacío. No se necesita crear manualmente.
 
-| Archivo | Descripción |
-|---|---|
-| `main.py` | Archivo principal. Contiene el menú, las validaciones de entrada (`pedir_entero`, `pedir_precio`, `pedir_texto`), las operaciones CRUD, la búsqueda y el conteo del inventario. Importa las funciones de `persistencia.py`. |
-| `persistencia.py` | Módulo encargado del archivo CSV: `crear_archivo()`, `leer_productos()` y `guardar_productos()`, con manejo de errores de lectura y escritura. |
-| `inventario.csv` | Se genera automáticamente. Guarda los productos con las columnas `id, nombre, categoria, cantidad, precio`. |
-| `README.md` | Este documento. |
+## 6. Uso del sistema
 
-## Opciones del menú
+Al ejecutar el programa aparece un menú con las siguientes opciones:
 
-1. **Crear producto:** registra un producto con ID automático, nombre, categoría, cantidad y precio.
-2. **Leer inventario:** muestra todos los productos y su estado (*REABASTECER* si la cantidad es 5 o menos, *Disponible* en otro caso).
-3. **Buscar producto:** busca por nombre (o parte del nombre) sin distinguir mayúsculas.
-4. **Actualizar producto:** cambia la cantidad y, si se desea, el precio de un producto por su ID.
-5. **Eliminar producto:** borra un producto por su ID, pidiendo confirmación.
-6. **Contar productos:** muestra el total de productos y cuántos necesitan reabastecimiento.
-7. **Salir.**
+1. **Crear producto:** registra un producto con identificador automático, nombre, categoría, cantidad y precio.
+2. **Leer inventario:** muestra los productos almacenados y su estado.
+3. **Buscar producto:** permite buscar por el nombre completo o una parte del nombre, sin distinguir mayúsculas y minúsculas.
+4. **Actualizar producto:** permite cambiar la cantidad y, opcionalmente, el precio de un producto mediante su ID.
+5. **Eliminar producto:** elimina un producto después de solicitar confirmación.
+6. **Contar productos:** muestra el número total de productos y cuántos requieren reabastecimiento.
+7. **Salir:** finaliza la ejecución.
 
-## Validaciones y manejo de errores
+### Ejemplo de registro
 
-- Nombre, categoría y texto de búsqueda no pueden quedar vacíos.
-- Cantidades e IDs deben ser enteros no negativos.
+Al seleccionar la opción 1, el sistema solicita los datos del producto. Por ejemplo:
 
-## Organización del proyecto
+- Nombre: Teclado
+- Categoría: Periféricos
+- Cantidad: 8
+- Precio: 75000
 
-- main.py: contiene el menú principal y las operaciones CRUD.
-- persistencia.py: contiene las funciones para crear, leer y guardar los productos en el archivo CSV.
-- README.md: contiene la descripción del proyecto y las instrucciones de uso.
+El sistema asigna automáticamente un ID y guarda el producto en `inventario.csv`.
 
- ## Persistencia de datos
+### Estado del inventario
 
-El sistema utiliza un archivo CSV para almacenar los productos registrados. Esto permite conservar la información entre ejecuciones del programa.
+El sistema muestra el estado **REABASTECER** cuando un producto tiene 5 unidades o menos. Si tiene más de 5 unidades, muestra **Disponible**.
 
-##Control de versiones
+## 7. Validaciones y manejo de errores
 
-Se utilizó Git para registrar cambios del proyecto y GitHub para publicar los archivos y documentar su evolución.
-- El precio debe ser numérico y mayor que cero (acepta punto o coma decimal).
+- Los campos de nombre, categoría y búsqueda no pueden quedar vacíos.
+- La cantidad debe ser un número entero igual o mayor que cero.
+- Los identificadores solicitados para actualizar o eliminar deben ser enteros mayores o iguales que uno.
+- El precio debe ser un número mayor que cero y no puede ser infinito ni un valor no numérico especial.
+- Si se ingresan letras en un campo numérico, el sistema muestra un mensaje y solicita nuevamente el dato.
+- Si el archivo CSV no existe o está vacío, se crea o inicializa con los encabezados requeridos.
+- Si una fila contiene datos incorrectos, se omite y se muestra una advertencia para continuar con las demás filas.
+- Si los encabezados del CSV no son válidos o ocurre un error de lectura, se informa el problema y no se procesa el inventario.
 
-## Pasos para ejecutar el proyecto
+## 8. Organización y persistencia
 
-1. Tener Python instalado en el computador.
-2. Guardar `main.py` y `persistencia.py` en la misma carpeta.
-3. Abrir una terminal dentro de esa carpeta.
-4. Ejecutar el comando `python main.py`.
-5. Utilizar el menú para registrar, consultar, buscar, actualizar o eliminar productos.
+El programa está dividido en dos módulos para separar responsabilidades:
 
-El archivo `inventario.csv` se utiliza para almacenar los productos registrados y conservar la información entre ejecuciones.
-- Si el CSV no se puede crear, leer o escribir (por ejemplo, por permisos), se muestra un mensaje y el inventario no se sobrescribe.
-- Si una fila del CSV tiene datos dañados, se omite con una advertencia y el resto del inventario se carga normalmente.
-- 
-- Si el archivo se borra mientras el programa está abierto, se vuelve a crear.
-- `Ctrl+C` cierra el programa sin mostrar errores.
+- `main.py`: gestiona la interacción con el usuario, las validaciones y las operaciones del inventario.
+- `persistencia.py`: administra la creación, lectura y escritura del archivo CSV.
+
+Cuando se registra, actualiza o elimina un producto, el programa envía la lista modificada a la función `guardar_productos()`. Esta escribe los encabezados y los registros en `inventario.csv`. Al consultar el inventario, `leer_productos()` recupera los registros y los convierte en una lista de diccionarios para que el programa pueda trabajar con ellos.
+
+## 9. Control de versiones
+
+El proyecto utiliza Git para el seguimiento de cambios y GitHub como plataforma de alojamiento del repositorio y colaboración.
+
+Repositorio: https://github.com/Santigol22/Control_Inventario
+
+## 10. Créditos y referencias
+
+Documentación consultada en formato APA 7:
+
+- Python Software Foundation. (s. f.). *csv — CSV File Reading and Writing*. Python documentation. https://docs.python.org/3/library/csv.html
+- Python Software Foundation. (s. f.). *math — Mathematical functions*. Python documentation. https://docs.python.org/3/library/math.html
+- Python Software Foundation. (s. f.). *Built-in exceptions*. Python documentation. https://docs.python.org/3/library/exceptions.html
+- Git. (s. f.). *Git documentation*. https://git-scm.com/doc
+- GitHub. (s. f.). *GitHub documentation*. https://docs.github.com/
