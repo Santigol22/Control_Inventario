@@ -8,6 +8,8 @@ La lectura y escritura del CSV se realizan en persistencia.py.
 """
 
 # Importa las funciones del modulo de persistencia.
+import math
+
 from persistencia import crear_archivo, leer_productos, guardar_productos
 
 # Cantidad minima para recomendar reabastecimiento.
@@ -32,15 +34,15 @@ def pedir_texto(mensaje):
 # ==========================================================
 # VALIDACION DE NUMEROS ENTEROS
 # ==========================================================
-def pedir_entero(mensaje):
-    """Solicita un numero entero no negativo."""
+def pedir_entero(mensaje, minimo=0):
+    """Solicita un numero entero igual o superior al minimo indicado."""
 
     while True:
         try:
             numero = int(input(mensaje))
 
-            if numero < 0:
-                print("Error: el numero no puede ser negativo.")
+            if numero < minimo:
+                print(f"Error: debes ingresar un numero mayor o igual a {minimo}.")
             else:
                 return numero
 
@@ -58,8 +60,8 @@ def pedir_precio(mensaje):
         try:
             precio = float(input(mensaje))
 
-            if precio <= 0:
-                print("Error: el precio debe ser mayor que cero.")
+            if not math.isfinite(precio) or precio <= 0:
+                print("Error: el precio debe ser un numero finito mayor que cero.")
             else:
                 return precio
 
@@ -240,7 +242,7 @@ def actualizar_producto():
         return
 
     print("\n--- ACTUALIZAR PRODUCTO ---")
-    id_buscar = pedir_entero("Ingrese el ID del producto: ")
+    id_buscar = pedir_entero("Ingrese el ID del producto: ", minimo=1)
 
     # Busca el producto mediante su identificador.
     producto = next(
@@ -279,7 +281,7 @@ def eliminar_producto():
         return
 
     print("\n--- ELIMINAR PRODUCTO ---")
-    id_eliminar = pedir_entero("Ingrese el ID del producto: ")
+    id_eliminar = pedir_entero("Ingrese el ID del producto: ", minimo=1)
 
     # Busca el producto por su ID.
     producto = next(
